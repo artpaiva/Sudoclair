@@ -1,0 +1,71 @@
+<html>
+<head>
+<style>
+* {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+.puzzle-wrapper{
+	width: 500px;
+	margin: 1rem auto;
+	text-align: center;
+}
+.sudoku-grid {
+	border-collapse: collapse;
+	border: 2px solid #000;
+}
+.sudoku-box {
+	border-collapse: collapse;
+	border: 1px solid #000;
+}
+.sudoku-box table{
+	padding: 0;
+	border-collapse: collapse;
+}
+.sudoku-box td{
+	border-collapse: collapse;
+	padding: 0.5rem 0.8rem;
+	border: 1px solid #CCC;
+}
+</style>
+</head>
+<body>
+	<div class="puzzle-wrapper">
+	</div>
+</body>
+<script type="text/javascript">
+var wrapper = document.querySelector('.puzzle-wrapper');
+
+function renderGrid () {
+	var grid = document.createElement('table');
+	grid.className = 'sudoku-grid';
+	for (var i = 0; i < 3; i++) {
+		var row = document.createElement('tr');
+		for (var j = 0; j < 3; j++) {
+
+			var boxtd = document.createElement('td');
+			var box = document.createElement('table');
+			boxtd.className = 'sudoku-box';
+			for (var x = 0; x < 3; x++) {
+				var line = document.createElement('tr');
+				for (var y = 0; y < 3; y++) {
+					var cell = document.createElement('td');
+					cell.innerHTML = j*3 + y +1;
+					line.appendChild(cell);
+				}
+				box.appendChild(line);
+			}
+			boxtd.appendChild(box);
+			row.appendChild(boxtd);
+
+		}
+		grid.appendChild(row);
+	}
+	wrapper.appendChild(grid);
+
+}
+renderGrid();
+
+</script>
+</html>
