@@ -1,10 +1,14 @@
 <html>
 <head>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400&display=swap" rel="stylesheet">
 <style>
 * {
 	box-sizing: border-box;
 	margin: 0;
 	padding: 0;
+}
+body {
+	font-family: 'Montserrat', sans-serif;
 }
 .puzzle-wrapper{
 	width: 500px;
@@ -13,11 +17,10 @@
 }
 .sudoku-grid {
 	border-collapse: collapse;
-	border: 2px solid #000;
 }
 .sudoku-box {
 	border-collapse: collapse;
-	border: 1px solid #000;
+	border: 2px solid #BBB;
 }
 .sudoku-box table{
 	padding: 0;
@@ -25,8 +28,28 @@
 }
 .sudoku-box td{
 	border-collapse: collapse;
-	padding: 0.5rem 0.8rem;
+	width: 2.8rem;
+	height: 2.8rem;
 	border: 1px solid #CCC;
+	color: #555;
+	text-align: center;
+	vertical-align: middle;
+	transition: 0.3s;
+}
+.sudoku-box td:hover{
+	background: #00000007;
+}
+table tr:first-child td {
+  border-top: 0;
+}
+table tr td:first-child {
+  border-left: 0;
+}
+table tr:last-child td {
+  border-bottom: 0;
+}
+table tr td:last-child {
+  border-right: 0;
 }
 </style>
 </head>
@@ -37,7 +60,88 @@
 <script type="text/javascript">
 var wrapper = document.querySelector('.puzzle-wrapper');
 
+var source = [];
+function initGrid () {
+	/*for (var i = 0; i < 9; i++) {
+		source[i] = [];
+		for (var j = 0; j < 9; j++) {
+			source[i][j] = 0;
+		}
+	}*/
+	// source = puzzlefy(source);
+
+	// Sample Sudoku board
+	source[0] = [6, 0, 9, 0, 0, 8, 3, 0, 2];
+	source[1] = [0, 5, 0, 6, 2, 0, 7, 0, 0];
+	source[2] = [0, 0, 7, 9, 0, 0, 0, 0, 0];
+	source[3] = [5, 0, 0, 0, 1, 0, 2, 6, 0];
+	source[4] = [0, 6, 0, 0, 0, 5, 0, 0, 0];
+	source[5] = [7, 0, 0, 0, 0, 2, 0, 0, 0];
+	source[6] = [9, 7, 6, 0, 0, 0, 0, 0, 1];
+	source[7] = [4, 1, 5, 0, 0, 0, 6, 3, 7];
+	source[8] = [2, 0, 0, 0, 0, 0, 5, 9, 4];
+}
+
+function puzzlefy (matrix) {
+	var size = 9;
+	var mize = 3;
+	var options = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+	var all = [];
+	for (var q = 0; q < size*size; q++) {
+		all[q] = q+1;
+	}
+	for (var p = 0; p < options.length; p++) {
+		var n = options[p];
+		
+	}
+	/*for (var i = 0; i < 9; i++) {
+		for (var j = 0; j < 9; j++) {
+			var temp = [];
+			for (var z = 0; z < options.length; z++) {
+				temp[z] = options[z];
+			}
+			var can = false;
+			var value = temp[0];
+			console.log(`Row: ${i}, Column ${j}`);
+			do {
+				var r = Math.floor(Math.random() * temp.length);
+				value = temp[r];
+				var found = false;
+
+				// Searches for an equal value on this column, row, if it finds, removes the value from the possible values
+				// Row
+				if (!found)
+				for (var a = 0; a < 9; a++) {
+					if (value == matrix[a][j]) {
+						found = true;
+						temp.splice(r, 1);
+						console.log(temp);
+					}
+				}
+				// Column
+				if (!found)
+				for (var b = 0; b < 9; b++) {
+					if (value == matrix[i][b]) {
+						found = true;
+						temp.splice(r, 1);
+						console.log(temp);
+					}
+				}
+
+				if (!found || temp.length == 0) {
+					can = true;
+					console.log(value);
+				}
+			} while (!can);
+
+			matrix[i][j] = value;
+		}
+	}*/
+	return matrix;
+}
+
 function renderGrid () {
+	initGrid();
 	var grid = document.createElement('table');
 	grid.className = 'sudoku-grid';
 	for (var i = 0; i < 3; i++) {
@@ -51,7 +155,9 @@ function renderGrid () {
 				var line = document.createElement('tr');
 				for (var y = 0; y < 3; y++) {
 					var cell = document.createElement('td');
-					cell.innerHTML = j*3 + y +1;
+					var ro = i*3 + x;
+					var co = j*3 + y;
+					cell.innerHTML = source[ro][co] == 0 ? ' ' : source[ro][co];
 					line.appendChild(cell);
 				}
 				box.appendChild(line);
