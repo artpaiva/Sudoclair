@@ -75,10 +75,18 @@ table tr:last-child td {
 table tr td:last-child {
   border-right: 0;
 }
+
+.button-solve {
+	padding: 0.3rem 0.8rem;
+	margin: 1rem auto;
+	color: #444;
+	font-size: 1.2rem;
+}
 </style>
 </head>
 <body>
 	<div class="puzzle-wrapper">
+		<button class="button-solve" onclick="solve()">Test it!</button>
 	</div>
 </body>
 <script type="text/javascript">
@@ -213,7 +221,78 @@ renderGrid();
 
 
 function solve () {
-
+	console.log('Testing it!');
+	var current = [];
+	for (var i = 0; i < 9; i++) {
+		current[i] = [];
+		for (var j = 0; j < 9; j++) {
+			current[i][j] = source[i][j];
+		}
+	}
+	// Sets all possible candidate for each cell
+	var candidacy = [];
+	for (var i = 0; i < 9; i++) {
+		candidacy[i] = [];
+		for (var j = 0; j < 9; j++) {
+			candidacy[i][j] = [];
+			if ( source[i][j] == 0 ) {
+				candidacy[i][j] = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+			} else {
+				candidacy[i][j][0] = source[i][j];
+			}
+		}
+	}
+	var prune = pruneCandidacy(current, candidacy);
+	current = prune.matrix;
+	candidacy = prune.candidacy;
+	console.log(candidacy);
+}
+function pruneCandidacy (matrix, candidacy) {
+	for (var i = 0; i < 9; i++) {
+		for (var j = 0; j < 9; j++) {
+			//if (candidacy[i][j].length > 0)
+			for (var c = 0; c < candidacy[i][j].length; c++) {
+				//Prune by Row
+				//Run through the row to see if there's any candidates to be removed
+				var candidate = candidacy[i][j][c];
+				for (var y = 0; y < 9; y++) {
+					if (y != i) {
+						if (candidate == matrix[y][j] && candidate == candidacy[i][j][c]) {
+							candidacy[i][j].splice(c, 1);
+							c--;
+						}
+					}
+				}
+				//Prune by Column
+				for (var x = 0; x < 9; x++) {
+					if (x != j) {
+						if (candidate == matrix[i][x] && candidate == candidacy[i][j][c]) {
+							candidacy[i][j].splice(c, 1);
+							c--;
+						}
+					}
+				}
+				//Prune by Box
+				var boxy = Math.floor(i/3)*3;
+				var boxx = Math.floor(j/3)*3;
+				console.log(`x: ${boxx}, y: ${boxy}`)
+				for (var y = boxy; y < boxy+3; y++) {
+					for (var x = boxx; x < boxx+3; x++) {
+						if (x != j && y != i) {
+							if (candidate == matrix[y][x] && candidate == candidacy[i][j][c]) {
+								candidacy[i][j].splice(c, 1);
+								c--;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	return {
+		matrix: matrix,
+		candidacy: candidacy
+	}
 }
 
 </script>
