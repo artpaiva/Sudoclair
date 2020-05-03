@@ -31,13 +31,37 @@ body {
 	width: 2.8rem;
 	height: 2.8rem;
 	border: 1px solid #CCC;
-	color: #555;
+	color: #AAA;
 	text-align: center;
 	vertical-align: middle;
 	transition: 0.3s;
 }
 .sudoku-box td:hover{
 	background: #00000007;
+}
+.cell-input{
+	cursor: pointer;
+	width: 100%;
+	height: 100%;
+	border: 0;
+	outline: 0;
+	background: transparent; 
+	color: #444;
+	font-family: 'Montserrat', sans-serif;
+	font-size: 1.1rem;
+	text-align: center;
+	transition: 0.3s;
+}
+.cell-input[type=number] {
+  -moz-appearance: textfield;
+}
+.cell-input::-webkit-outer-spin-button,
+.cell-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.cell-input:focus{
+	background: #00000705; 
 }
 table tr:first-child td {
   border-top: 0;
@@ -61,6 +85,7 @@ table tr td:last-child {
 var wrapper = document.querySelector('.puzzle-wrapper');
 
 var source = [];
+var custom = [];
 function initGrid () {
 	/*for (var i = 0; i < 9; i++) {
 		source[i] = [];
@@ -80,6 +105,12 @@ function initGrid () {
 	source[6] = [9, 7, 6, 0, 0, 0, 0, 0, 1];
 	source[7] = [4, 1, 5, 0, 0, 0, 6, 3, 7];
 	source[8] = [2, 0, 0, 0, 0, 0, 5, 9, 4];
+	for (var i = 0; i < 9; i++) {
+		custom[i] = [];
+		for (var j = 0; j < 9; j++) {
+			custom[i][j] = source[i][j];
+		}
+	}
 }
 
 function puzzlefy (matrix) {
@@ -157,7 +188,14 @@ function renderGrid () {
 					var cell = document.createElement('td');
 					var ro = i*3 + x;
 					var co = j*3 + y;
-					cell.innerHTML = source[ro][co] == 0 ? ' ' : source[ro][co];
+					var inside = document.createElement(source[ro][co] == 0 ? 'input' : 'span');
+					inside.className = source[ro][co] == 0 ? 'cell-input' : 'cell-span';
+					inside.innerHTML = source[ro][co] == 0 ? '' : source[ro][co];
+					inside.type = 'number';
+					inside.maxLength = '1';
+					inside.min = '1';
+					inside.max = '9';
+					cell.appendChild(inside);
 					line.appendChild(cell);
 				}
 				box.appendChild(line);
@@ -172,6 +210,11 @@ function renderGrid () {
 
 }
 renderGrid();
+
+
+function solve () {
+
+}
 
 </script>
 </html>
