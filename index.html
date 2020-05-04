@@ -77,8 +77,9 @@ table tr td:last-child {
 }
 
 .button-solve {
-	padding: 0.3rem 0.8rem;
 	margin: 1rem auto;
+	padding: 0.4rem 1.6rem;
+	border: 2px solid #444;
 	color: #444;
 	font-size: 1.2rem;
 }
@@ -242,10 +243,25 @@ function solve () {
 			}
 		}
 	}
-	var prune = pruneCandidacy(current, candidacy);
-	current = prune.matrix;
-	candidacy = prune.candidacy;
+	var stop = false;
+	var icandidacy = [];
+	do {
+		for (var i = 0; i < 9; i++) {
+			icandidacy[i] = [];
+			for (var j = 0; j < 9; j++) {
+				icandidacy[i][j] = [];
+				for (var c = 0; c < candidacy[i][j].length; c++) {
+					icandidacy[i][j][c] = candidacy[i][j][c];
+				}
+			}
+		}
+		candidacy = pruneCandidacy(current, candidacy);
+		current = unique(current, candidacy);
+		stop = icandidacy.equals(candidacy);
+		console.log(stop);
+	} while(!stop)
 	console.log(candidacy);
+	console.log(current);
 }
 function pruneCandidacy (matrix, candidacy) {
 	for (var i = 0; i < 9; i++) {
@@ -275,7 +291,6 @@ function pruneCandidacy (matrix, candidacy) {
 				//Prune by Box
 				var boxy = Math.floor(i/3)*3;
 				var boxx = Math.floor(j/3)*3;
-				console.log(`x: ${boxx}, y: ${boxy}`)
 				for (var y = boxy; y < boxy+3; y++) {
 					for (var x = boxx; x < boxx+3; x++) {
 						if (x != j && y != i) {
@@ -289,11 +304,48 @@ function pruneCandidacy (matrix, candidacy) {
 			}
 		}
 	}
-	return {
-		matrix: matrix,
-		candidacy: candidacy
-	}
+	return candidacy;
 }
+function unique (matrix, candidacy) {
+	for (var i = 0; i < 9; i++) {
+		for (var j = 0; j < 9; j++) {
+			if (candidacy[i][j].length == 1) {
+				matrix[i][j] = candidacy[i][j][0];
+			}
+		}
+	}
+	return matrix;
+}
+
+// Warn if overriding existing method
+if(Array.prototype.equals)
+    console.warn("Overriding existing Array.prototype.equals. Possible causes: New API defines the method, there's a framework conflict or you've got double inclusions in your code.");
+// attach the .equals method to Array's prototype to call it on any array
+Array.prototype.equals = function (array) {
+    // if the other array is a falsy value, return
+    if (!array)
+        return false;
+
+    // compare lengths - can save a lot of time 
+    if (this.length != array.length)
+        return false;
+
+    for (var i = 0, l=this.length; i < l; i++) {
+        // Check if we have nested arrays
+        if (this[i] instanceof Array && array[i] instanceof Array) {
+            // recurse into the nested arrays
+            if (!this[i].equals(array[i]))
+                return false;       
+        }           
+        else if (this[i] != array[i]) { 
+            // Warning - two different object instances will never be equal: {x:20} != {x:20}
+            return false;   
+        }           
+    }       
+    return true;
+}
+// Hide method from for-in loops
+Object.defineProperty(Array.prototype, "equals", {enumerable: false});
 
 </script>
 </html>
