@@ -257,6 +257,7 @@ function solve () {
 		}
 		candidacy = pruneCandidacy(current, candidacy);
 		current = unique(current, candidacy);
+		current = soleCandidate(current, candidacy);
 		stop = icandidacy.equals(candidacy);
 		console.log(stop);
 	} while(!stop)
@@ -311,6 +312,29 @@ function unique (matrix, candidacy) {
 		for (var j = 0; j < 9; j++) {
 			if (candidacy[i][j].length == 1) {
 				matrix[i][j] = candidacy[i][j][0];
+			}
+		}
+	}
+	return matrix;
+}
+function soleCandidate (matrix, candidacy) {
+	var options = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+	//Checks row by row if each a candidacy is the only possible one in its row
+	for (var n = 0; n < options.length; n++) {
+		for (var i = 0; i < 9; i++) {
+			var count = 0;
+			var where = 0;
+			for (var j = 0; j < 9; j++) {
+				if (candidacy[i][j].includes(n)) {
+					count++;
+					where = j;
+				}
+			}
+			if (count == 1) {
+				//console.log(`row[${i}], column[${where}] is the only candidate in its row that can be a ${n}`);
+				candidacy[i][where] = [];
+				candidacy[i][where][0] = n;
+				matrix[i][where] = n;
 			}
 		}
 	}
