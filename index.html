@@ -95,17 +95,27 @@ table tr td:last-child {
 }
 .log-item {
 	margin: 0.6rem auto;
-	padding: 0.6rem 2.4rem;
-	border-radius: 2rem;
+	padding: 0.4rem 1.4rem;
+	border-radius: 0.4rem;
 	background: #EEE;
 	color: #444;
-	font-size: 1.2rem;
+	font-size: 1.1rem;
+}
+.log-item.normal {
+	border: 1px solid #777;
+	background: transparent;
 }
 .log-item.ok {
 	background: #DDFFDD;
 }
 .log-item.fail {
 	background: #FFDDDD;
+}
+.logger .sudoku-box td{
+	border-collapse: collapse;
+	width: 2.4rem;
+	height: 2.4rem;
+	font-size: 0.9rem;
 }
 </style>
 </head>
@@ -273,7 +283,7 @@ renderGrid(wrapper, source);
 function solve () {
 	console.log('Testing it!');
 	cons.innerHTML = " ";
-	log('Starting validity test', 'normal');
+	log('Starting validity test', '');
 	var current = [];
 	for (var i = 0; i < 9; i++) {
 		current[i] = [];
@@ -313,12 +323,13 @@ function solve () {
 		console.log(stop);
 	} while(!stop)
 	if (isSolved(current)) {
-		log('Complete Testing. This is a valid board!', 'ok');
+		log('Complete. This is a valid board!', 'ok');
+		log('See solved board below', 'normal');
 	} else {
 		log('Could not solve this board.', 'fail');
 	}
-	log('Finished validity test', 'normal');
 	renderGrid(cons, current);
+	log('Finished validity test', '');
 	console.log(candidacy);
 	console.log(current);
 }
