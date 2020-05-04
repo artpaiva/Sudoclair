@@ -83,15 +83,43 @@ table tr td:last-child {
 	color: #444;
 	font-size: 1.2rem;
 }
+.logger {
+	position: fixed;
+	right: 10px;
+	bottom: 10px;
+	margin: 3rem auto;
+	text-align: center;
+}
+.log-wrapper {
+	position: relative;
+}
+.log-item {
+	margin: 0.6rem auto;
+	padding: 0.6rem 2.4rem;
+	border-radius: 2rem;
+	background: #EEE;
+	color: #444;
+	font-size: 1.2rem;
+}
+.log-item.ok {
+	background: #DDFFDD;
+}
+.log-item.fail {
+	background: #FFDDDD;
+}
 </style>
 </head>
 <body>
 	<div class="puzzle-wrapper">
-		<button class="button-solve" onclick="solve()">Test it!</button>
+		<button class="button-solve" onclick="solve()">Test validity!</button>
+	</div>
+	<div class="logger">
+		<div class="log-wrapper"></div>
 	</div>
 </body>
 <script type="text/javascript">
 var wrapper = document.querySelector('.puzzle-wrapper');
+var cons = document.querySelector('.logger .log-wrapper');
 
 var source = [];
 var custom = [];
@@ -105,6 +133,7 @@ function initGrid () {
 	// source = puzzlefy(source);
 
 	// Sample Sudoku board
+	// Medium 
 	source[0] = [6, 0, 9, 0, 0, 8, 3, 0, 2];
 	source[1] = [0, 5, 0, 6, 2, 0, 7, 0, 0];
 	source[2] = [0, 0, 7, 9, 0, 0, 0, 0, 0];
@@ -114,6 +143,17 @@ function initGrid () {
 	source[6] = [9, 7, 6, 0, 0, 0, 0, 0, 1];
 	source[7] = [4, 1, 5, 0, 0, 0, 6, 3, 7];
 	source[8] = [2, 0, 0, 0, 0, 0, 5, 9, 4];
+	// Hard
+	/*source[0] = [5, 0, 2, 0, 0, 9, 0, 0, 0];
+	source[1] = [3, 0, 0, 0, 0, 0, 0, 0, 7];
+	source[2] = [0, 0, 0, 2, 6, 0, 0, 0, 0];
+	source[3] = [7, 0, 0, 5, 0, 6, 0, 0, 0];
+	source[4] = [0, 0, 0, 0, 0, 0, 1, 0, 0];
+	source[5] = [0, 0, 0, 0, 2, 8, 0, 0, 9];
+	source[6] = [0, 0, 0, 0, 0, 0, 0, 4, 0];
+	source[7] = [0, 6, 0, 4, 0, 5, 3, 0, 0];
+	source[8] = [0, 1, 0, 0, 3, 0, 6, 2, 0];*/
+	// Master
 	/*source[0] = [5, 0, 0, 2, 0, 0, 0, 4, 0];
 	source[1] = [0, 0, 0, 6, 0, 3, 0, 0, 0];
 	source[2] = [0, 3, 0, 0, 0, 9, 0, 0, 7];
@@ -189,7 +229,7 @@ function puzzlefy (matrix) {
 	return matrix;
 }
 
-function renderGrid () {
+function renderGrid (element, matrix) {
 	initGrid();
 	var grid = document.createElement('table');
 	grid.className = 'sudoku-grid';
@@ -206,9 +246,9 @@ function renderGrid () {
 					var cell = document.createElement('td');
 					var ro = i*3 + x;
 					var co = j*3 + y;
-					var inside = document.createElement(source[ro][co] == 0 ? 'input' : 'span');
-					inside.className = source[ro][co] == 0 ? 'cell-input' : 'cell-span';
-					inside.innerHTML = source[ro][co] == 0 ? '' : source[ro][co];
+					var inside = document.createElement(matrix[ro][co] == 0 ? 'input' : 'span');
+					inside.className = matrix[ro][co] == 0 ? 'cell-input' : 'cell-span';
+					inside.innerHTML = matrix[ro][co] == 0 ? '' : matrix[ro][co];
 					inside.type = 'number';
 					inside.maxLength = '1';
 					inside.min = '1';
@@ -224,14 +264,16 @@ function renderGrid () {
 		}
 		grid.appendChild(row);
 	}
-	wrapper.appendChild(grid);
+	element.appendChild(grid);
 
 }
-renderGrid();
+renderGrid(wrapper, source);
 
 
 function solve () {
 	console.log('Testing it!');
+	cons.innerHTML = " ";
+	log('Starting validity test', 'normal');
 	var current = [];
 	for (var i = 0; i < 9; i++) {
 		current[i] = [];
@@ -270,8 +312,25 @@ function solve () {
 		stop = icandidacy.equals(candidacy);
 		console.log(stop);
 	} while(!stop)
+	if (isSolved(current)) {
+		log('Complete Testing. This is a valid board!', 'ok');
+	} else {
+		log('Could not solve this board.', 'fail');
+	}
+	log('Finished validity test', 'normal');
+	renderGrid(cons, current);
 	console.log(candidacy);
 	console.log(current);
+}
+function isSolved (matrix) {
+	for (var i = 0; i < 9; i++) {
+		for (var j = 0; j < 9; j++) {
+			if (matrix[i][j] == 0) {
+				return false
+			}
+		}
+	}
+	return true;
 }
 function pruneCandidacy (matrix, candidacy) {
 	for (var i = 0; i < 9; i++) {
@@ -391,6 +450,12 @@ function soleCandidate (matrix, candidacy) {
 		}
 	}
 	return matrix;
+}
+function log(message, type) {
+	var item = document.createElement('div');
+	item.className = `log-item ${type}`;
+	item.innerHTML = message;
+	cons.appendChild(item);
 }
 
 // Warn if overriding existing method
