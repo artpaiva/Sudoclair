@@ -341,8 +341,12 @@ function solve () {
 		console.log(stop);
 	} while(!stop)
 	if (isSolved(current)) {
-		log('Complete. This is a valid board!', 'ok');
-		log('See solved board below', 'normal');
+		if (isValid(current)) {
+			log('Complete. This is a valid board!', 'ok');
+		} else {
+			log('Complete. This is an invalid board!', 'fail');
+		}
+		log('See filled board below', 'normal');
 	} else {
 		log('Could not solve this board.', 'fail');
 	}
@@ -355,6 +359,34 @@ function isSolved (matrix) {
 	for (var i = 0; i < 9; i++) {
 		for (var j = 0; j < 9; j++) {
 			if (matrix[i][j] == 0) {
+				return false
+			}
+		}
+	}
+	return true;
+}
+function isValid (matrix) {
+	for (var n = 1; n <= 9; n++) {
+		//Check if there's only one instance of n per row
+		for (var i = 0; i < 9; i++) {
+			var count = 0;
+			for (var j = 0; j < 9; j++) {
+				if (matrix[i][j] == n) {
+					count++;
+				}
+			}
+			if (count > 1) {
+				return false
+			}
+		}
+		for (var j = 0; j < 9; j++) {
+			var count = 0;
+			for (var i = 0; i < 9; i++) {
+				if (matrix[i][j] == n) {
+					count++;
+				}
+			}
+			if (count > 1) {
 				return false
 			}
 		}
