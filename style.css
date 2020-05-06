@@ -1,0 +1,117 @@
+* {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+body {
+	background: #F9F9F9;
+	font-family: 'Montserrat', sans-serif;
+}
+.puzzle-wrapper{
+	width: 500px;
+	margin: 1rem auto;
+	text-align: center;
+}
+.sudoku-grid {
+	border-collapse: collapse;
+}
+.sudoku-box {
+	border-collapse: collapse;
+	border: 2px solid #BBB;
+}
+.sudoku-box table{
+	padding: 0;
+	border-collapse: collapse;
+}
+.sudoku-box td{
+	border-collapse: collapse;
+	width: 2.8rem;
+	height: 2.8rem;
+	border: 1px solid #CCC;
+	color: #AAA;
+	text-align: center;
+	vertical-align: middle;
+	transition: 0.3s;
+}
+.sudoku-box td:hover{
+	background: #00000007;
+}
+.cell-input{
+	cursor: pointer;
+	width: 100%;
+	height: 100%;
+	border: 0;
+	outline: 0;
+	background: transparent; 
+	color: #444;
+	font-family: 'Montserrat', sans-serif;
+	font-size: 1.1rem;
+	text-align: center;
+	transition: 0.3s;
+}
+.cell-input[type=number] {
+  -moz-appearance: textfield;
+}
+.cell-input::-webkit-outer-spin-button,
+.cell-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.cell-input:focus{
+	background: #00000705; 
+}
+table tr:first-child td {
+  border-top: 0;
+}
+table tr td:first-child {
+  border-left: 0;
+}
+table tr:last-child td {
+  border-bottom: 0;
+}
+table tr td:last-child {
+  border-right: 0;
+}
+
+.button-solve {
+	margin: 1rem auto;
+	padding: 0.4rem 1.6rem;
+	border: 2px solid #444;
+	background: #F9F9F9;
+	color: #444;
+	font-size: 1.2rem;
+}
+.logger {
+	position: fixed;
+	right: 10px;
+	bottom: 10px;
+	margin: 3rem auto;
+	text-align: center;
+}
+.log-wrapper {
+	position: relative;
+}
+.log-item {
+	margin: 0.6rem auto;
+	padding: 0.4rem 1.4rem;
+	border-radius: 0.4rem;
+	background: #EEE;
+	color: #444;
+	font-size: 1.1rem;
+}
+.log-item.normal {
+	border: 1px solid #777;
+	background: transparent;
+}
+.log-item.ok {
+	background: #DDFFDD;
+}
+.log-item.fail {
+	background: #FFDDDD;
+}
+.logger .sudoku-box td{
+	border-collapse: collapse;
+	width: 2.4rem;
+	height: 2.4rem;
+	font-size: 0.9rem;
+}
