@@ -332,6 +332,7 @@ function solve () {
 		candidacy = pruneCandidacy(current, candidacy);
 		console.log('Will now linear Candidacy');
 		candidacy = linearCandidacy(current, candidacy);
+		console.log(candidacy);
 		console.log('Will now unique');
 		current = unique(current, candidacy);
 		console.log('Will now sole Candidate');
@@ -488,29 +489,27 @@ function linearCandidacy (matrix, candidacy) {
 				var ally = [];
 				var allx = [];
 				var count = 0;
+				var can = true;
 				for (var y = i; y < i+3; y++) {
 					for (var x = j; x < j+3; x++) {
-						if (candidacy[y][x].length > 1 && candidacy[y][x].includes(n)) {
+						if (candidacy[y][x].length == 1 && candidacy[y][x][0] == n) {
+							can = false;
+						}
+						else if (candidacy[y][x].length > 1 && candidacy[y][x].includes(n)) {
 							ally[count] = y;
 							allx[count] = x;
 							count++;
 						}
 					}
 				}
-				if (count > 1) {
+				if (can && count > 1) {
 					var lirow = ally.homogeneous();
 					var licol = allx.homogeneous();
 					// Check if all the n candidates are in the same column
 					if (licol) {
-						console.log(`Found a (column) linear candidacy in: r${ally[0]}c${allx[0]} and r${ally[1]}c${allx[1]} for ${n} `);
+						console.log(`Column ${allx[0]+1} can only hold a ${n} in: r${ally[0]+1}c${allx[0]+1} and r${ally[1]+1}c${allx[1]+1}`);
+						//console.log(`Found a (column) linear candidacy in: r${ally[0]}c${allx[0]} and r${ally[1]}c${allx[1]} for ${n} `);
 						var col = allx[0];
-						/*for (var y = i; y < i+3; y++) {
-							for (var x = 0; x < 9; x++) {
-								if (x == col) {
-									candidacy[y][x].expel(n);
-								}
-							}
-						}*/
 						for (var y = 0; y < 9; y++) {
 							var canexpel = true;
 							for (var a = 0; a < count; a++) {
@@ -525,7 +524,8 @@ function linearCandidacy (matrix, candidacy) {
 					}
 					// Check if all the n candidates are in the same row
 					if (lirow) {
-						console.log(`Found a (row) linear candidacy in: r${ally[0]}c${allx[0]} and r${ally[1]}c${allx[1]} for ${n} `);
+						console.log(`Row ${ally[0]+1} can only hold a ${n} in: r${ally[0]+1}c${allx[0]+1} and r${ally[1]+1}c${allx[1]+1}`);
+						//console.log(`Found a (row) linear candidacy in: r${ally[0]}c${allx[0]} and r${ally[1]}c${allx[1]} for ${n} `);
 						var row = ally[0];
 						for (var x = 0; x < 9; x++) {
 							var canexpel = true;
