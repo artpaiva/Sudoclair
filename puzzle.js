@@ -34,7 +34,17 @@ function initGrid () {
 	source[7] = [4, 1, 5, 0, 0, 0, 6, 3, 7];
 	source[8] = [2, 0, 0, 0, 0, 0, 5, 9, 4];*/
 	// Hard
-	source[0] = [5, 0, 2, 0, 0, 9, 0, 0, 0];
+	/*source[0] = [4, 0, 0, 3, 1, 9, 0, 0, 6];
+	source[1] = [0, 0, 1, 0, 0, 0, 9, 0, 0];
+	source[2] = [0, 6, 7, 4, 0, 0, 0, 2, 1];
+	source[3] = [7, 0, 0, 0, 5, 0, 0, 0, 4];
+	source[4] = [0, 0, 0, 1, 4, 2, 0, 0, 0];
+	source[5] = [2, 0, 0, 0, 7, 0, 0, 0, 8];
+	source[6] = [0, 2, 0, 0, 0, 0, 0, 6, 0];
+	source[7] = [0, 0, 4, 0, 0, 0, 8, 0, 0];
+	source[8] = [1, 0, 0, 5, 0, 8, 0, 0, 7];*/
+	// Advanced
+	/*source[0] = [5, 0, 2, 0, 0, 9, 0, 0, 0];
 	source[1] = [3, 0, 0, 0, 0, 0, 0, 0, 7];
 	source[2] = [0, 0, 0, 2, 6, 0, 0, 0, 0];
 	source[3] = [7, 0, 0, 5, 0, 6, 0, 0, 0];
@@ -42,7 +52,17 @@ function initGrid () {
 	source[5] = [0, 0, 0, 0, 2, 8, 0, 0, 9];
 	source[6] = [0, 0, 0, 0, 0, 0, 0, 4, 0];
 	source[7] = [0, 6, 0, 4, 0, 5, 3, 0, 0];
-	source[8] = [0, 1, 0, 0, 3, 0, 6, 2, 0];
+	source[8] = [0, 1, 0, 0, 3, 0, 6, 2, 0];*/
+	// Expert
+	source[0] = [1, 0, 0, 0, 2, 0, 0, 0, 3];
+	source[1] = [0, 2, 0, 4, 0, 0, 0, 5, 0];
+	source[2] = [0, 0, 5, 0, 0, 0, 6, 0, 0];
+	source[3] = [0, 0, 0, 0, 0, 0, 0, 7, 0];
+	source[4] = [3, 0, 0, 0, 6, 0, 0, 0, 1];
+	source[5] = [0, 8, 0, 0, 0, 0, 0, 0, 0];
+	source[6] = [0, 0, 8, 0, 0, 0, 2, 0, 0];
+	source[7] = [0, 7, 0, 0, 0, 1, 0, 4, 0];
+	source[8] = [6, 0, 0, 0, 3, 0, 0, 0, 9];
 	// Master
 	/*source[0] = [5, 0, 0, 2, 0, 0, 0, 4, 0];
 	source[1] = [0, 0, 0, 6, 0, 3, 0, 0, 0];
@@ -196,16 +216,17 @@ function solve () {
 				}
 			}
 		}
-		console.log('Will now prune Candidacy');
+		//console.log('Will now prune Candidacy');
 		candidacy = pruneCandidacy(current, candidacy);
-		console.log('Will now linear Candidacy');
+		//console.log('Will now linear Candidacy');
 		candidacy = linearCandidacy(current, candidacy);
-		console.log(candidacy);
-		console.log('Will now unique');
+		candidacy = mutualExclusivity(current, candidacy);
+		//console.log(candidacy);
+		//console.log('Will now unique');
 		current = unique(current, candidacy);
-		console.log('Will now sole Candidate');
+		//console.log('Will now sole Candidate');
 		current = soleCandidate(current, candidacy);
-		stop = icandidacy.equals(candidacy);
+		stop = isSolved(current) || icandidacy.equals(candidacy);
 		console.log(stop);
 	} while(!stop)
 	if (isSolved(current)) {
@@ -407,7 +428,7 @@ function linearCandidacy (matrix, candidacy) {
 					var licol = allx.homogeneous();
 					// Check if all the n candidates are in the same column
 					if (licol) {
-						console.log(`Column ${allx[0]+1} can only hold a ${n} in: r${ally[0]+1}c${allx[0]+1} and r${ally[1]+1}c${allx[1]+1}`);
+						//console.log(`Column ${allx[0]+1} can only hold a ${n} in: r${ally[0]+1}c${allx[0]+1} and r${ally[1]+1}c${allx[1]+1}`);
 						//console.log(`Found a (column) linear candidacy in: r${ally[0]}c${allx[0]} and r${ally[1]}c${allx[1]} for ${n} `);
 						var col = allx[0];
 						for (var y = 0; y < 9; y++) {
@@ -424,7 +445,7 @@ function linearCandidacy (matrix, candidacy) {
 					}
 					// Check if all the n candidates are in the same row
 					if (lirow) {
-						console.log(`Row ${ally[0]+1} can only hold a ${n} in: r${ally[0]+1}c${allx[0]+1} and r${ally[1]+1}c${allx[1]+1}`);
+						//console.log(`Row ${ally[0]+1} can only hold a ${n} in: r${ally[0]+1}c${allx[0]+1} and r${ally[1]+1}c${allx[1]+1}`);
 						//console.log(`Found a (row) linear candidacy in: r${ally[0]}c${allx[0]} and r${ally[1]}c${allx[1]} for ${n} `);
 						var row = ally[0];
 						for (var x = 0; x < 9; x++) {
@@ -443,6 +464,95 @@ function linearCandidacy (matrix, candidacy) {
 			}
 		}
 	}
+	return candidacy;
+}
+function mutualExclusivity (matrix, candidacy) {
+	///Naked Pairs
+	//Loop through each candidacy cell
+	//On each cell, loop through its box and store any cell that equals its exact candidacy
+	//If the number of (candidacy) identical cells found is the same as the candidacy length for each one, they are mutually exclusive
+	//Therefore, you can expel their candidates from every cell on its box that isn't on their exclusivity set
+
+	///Hidden and naked pairs
+	//Loop by option [1-9]
+	//Loop by set(row, column, box)
+	//When find an appearance of n on a cell's candidacy, store its position
+	//For each n, loop through the remaining n's for this set, and check if their possible positions are equal to this one's
+	//If so, create a match
+	//Now, for each matched cell, expel all options that aren't n's matches
+	//And for each cell from the set, that isn't this match, expel the options present on match
+	var options = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+	//Row by row
+	for (var i = 0; i < 9; i++) {
+		var appearance = [];
+		for (var n = 1; n <= options.length; n++) {
+			var count = 0;
+			appearance[n] = [];
+			for (var j = 0; j < 9; j++) {
+				if (candidacy[i][j].includes(n)) {
+					appearance[n][count] = {};
+					appearance[n][count].y = i;
+					appearance[n][count].x = j;
+					count++;
+				}
+			}
+		}
+		var match = [];
+		var at = 0;
+		for (var n = 1; n < options.length; n++) {
+			match[at] = [];
+			match[at][0] = n;
+			var matched = false;
+			for (var o = n+1; o < 9; o++) {
+				var canmatch = true;
+				if (appearance[n].length > 1) {
+					for (var a = 0; a < appearance[n].length; a++) {
+						if ( appearance[n].length == appearance[o].length
+						  && appearance[n][a].y == appearance[o][a].y && appearance[n][a].x == appearance[o][a].x ) { }
+						else {
+							canmatch = false;
+						}
+					}
+					if (canmatch) {
+						matched = true;
+						match[at].push(o);
+					}
+				}
+			}
+			if (matched) {
+				at++;
+			}
+		}
+		for (var e = 0; e < match.length; e++) {
+			if (match[e].length > 1 && match[e].length == appearance[match[e][0]].length) {
+				console.log(match[e]);
+				for (var j = 0; j < 9; j++) {
+					var isPair = true;
+					for (var u = 0; u < match[e].length; u++) {
+						if (!candidacy[i][j].includes(match[e][u])) {
+							isPair = false;
+						}
+					}
+					if (isPair) {
+						console.log(`pair found at r${i+1}c${j+1}`);
+						for (var n = 1; n <= options.length; n++) {
+							if (!match[e].includes(n)) {
+								candidacy[i][j].expel(n);
+							}
+						}
+					} else {
+						console.log(`pair not found at r${i+1}c${j+1}`);
+						for (var u = 0; u < match[e].length; u++) {
+							candidacy[i][j].expel(match[e][u]);
+						}
+						console.log(candidacy[i][j]);
+					}
+				}
+			}
+		}
+	}
+	//console.log(candidacy);
 	return candidacy;
 }
 function mayLay (matrix, row, col, value) {
