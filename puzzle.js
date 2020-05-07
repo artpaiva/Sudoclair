@@ -139,7 +139,7 @@ function puzzlefy (matrix) {
 	return matrix;
 }
 
-function renderGrid (element, matrix) {
+function renderGrid (element, matrix, candidacy) {
 	initGrid();
 	var grid = document.createElement('table');
 	grid.className = 'sudoku-grid';
@@ -156,6 +156,9 @@ function renderGrid (element, matrix) {
 					var cell = document.createElement('td');
 					var ro = i*3 + x;
 					var co = j*3 + y;
+					if (candidacy) {
+						cell.title = candidacy[ro][co];
+					}
 					var inside = document.createElement(matrix[ro][co] == 0 ? 'input' : 'span');
 					inside.className = matrix[ro][co] == 0 ? 'cell-input' : 'cell-span';
 					inside.innerHTML = matrix[ro][co] == 0 ? '' : matrix[ro][co];
@@ -239,7 +242,7 @@ function solve () {
 	} else {
 		log('Could not solve this board.', 'fail');
 	}
-	renderGrid(cons, current);
+	renderGrid(cons, current, candidacy);
 	log('Finished validity test', '');
 	console.log(candidacy);
 	console.log(current);
@@ -467,12 +470,6 @@ function linearCandidacy (matrix, candidacy) {
 	return candidacy;
 }
 function mutualExclusivity (matrix, candidacy) {
-	///Naked Pairs
-	//Loop through each candidacy cell
-	//On each cell, loop through its box and store any cell that equals its exact candidacy
-	//If the number of (candidacy) identical cells found is the same as the candidacy length for each one, they are mutually exclusive
-	//Therefore, you can expel their candidates from every cell on its box that isn't on their exclusivity set
-
 	///Hidden and naked pairs
 	//Loop by option [1-9]
 	//Loop by set(row, column, box)
@@ -552,7 +549,76 @@ function mutualExclusivity (matrix, candidacy) {
 			}
 		}
 	}
-	//console.log(candidacy);
+
+	//Column by column
+	for (var j = 0; j < 9; j++) {
+		var appearance = [];
+		for (var n = 1; n <= options.length; n++) {
+			var count = 0;
+			appearance[n] = [];
+			for (var i = 0; i < 9; i++) {
+				if (candidacy[i][j].includes(n)) {
+					appearance[n][count] = {};
+					appearance[n][count].y = i;
+					appearance[n][count].x = j;
+					count++;
+				}
+			}
+		}
+		var match = [];
+		var at = 0;
+		for (var n = 1; n < options.length; n++) {
+			match[at] = [];
+			match[at][0] = n;
+			var matched = false;
+			for (var o = n+1; o < 9; o++) {
+				var canmatch = true;
+				if (appearance[n].length > 1) {
+					for (var a = 0; a < appearance[n].length; a++) {
+						if ( appearance[n].length == appearance[o].length
+						  && appearance[n][a].y == appearance[o][a].y && appearance[n][a].x == appearance[o][a].x ) { }
+						else {
+							canmatch = false;
+						}
+					}
+					if (canmatch) {
+						matched = true;
+						match[at].push(o);
+					}
+				}
+			}
+			if (matched) {
+				at++;
+			}
+		}
+		for (var e = 0; e < match.length; e++) {
+			if (match[e].length > 1 && match[e].length == appearance[match[e][0]].length) {
+				console.log(match[e]);
+				for (var i = 0; i < 9; i++) {
+					var isPair = true;
+					for (var u = 0; u < match[e].length; u++) {
+						if (!candidacy[i][j].includes(match[e][u])) {
+							isPair = false;
+						}
+					}
+					if (isPair) {
+						console.log(`pair found at r${i+1}c${j+1}`);
+						for (var n = 1; n <= options.length; n++) {
+							if (!match[e].includes(n)) {
+								candidacy[i][j].expel(n);
+							}
+						}
+					} else {
+						console.log(`pair not found at r${i+1}c${j+1}`);
+						for (var u = 0; u < match[e].length; u++) {
+							candidacy[i][j].expel(match[e][u]);
+						}
+						console.log(candidacy[i][j]);
+					}
+				}
+			}
+		}
+	}
 	return candidacy;
 }
 function mayLay (matrix, row, col, value) {
