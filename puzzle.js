@@ -463,6 +463,21 @@ function linearCandidacy (matrix, candidacy) {
 							}
 						}
 					}
+					if (licol || lirow) {
+						for (var y = i; y < i+3; y++) {
+							for (var x = j; x < j+3; x++) {
+								var canexpel = true;
+								for (var a = 0; a < count; a++) {
+									if ( allx[a] == x && ally[a] == y) {
+										canexpel = false;
+									}
+								}
+								if (canexpel) {
+									candidacy[y][x].expel(n);
+								}
+							}
+						}
+					}
 				}
 			}
 		}
@@ -614,6 +629,82 @@ function mutualExclusivity (matrix, candidacy) {
 							candidacy[i][j].expel(match[e][u]);
 						}
 						console.log(candidacy[i][j]);
+					}
+				}
+			}
+		}
+	}
+
+	//Box by Box
+	for (var i = 0; i < 9; i+=3) {
+		for (var j = 0; j < 9; j+=3) {
+			var appearance = [];
+			for (var n = 1; n <= options.length; n++) {
+				var count = 0;
+				appearance[n] = [];
+				for (var y = i; y < i+3; y++) {
+					for (var x = j; x < j+3; x++) {
+						if (candidacy[y][x].includes(n)) {
+							appearance[n][count] = {};
+							appearance[n][count].y = y;
+							appearance[n][count].x = x;
+							count++;
+						}
+					}
+				}
+			}
+			var match = [];
+			var at = 0;
+			for (var n = 1; n < options.length; n++) {
+				match[at] = [];
+				match[at][0] = n;
+				var matched = false;
+				for (var o = n+1; o < 9; o++) {
+					var canmatch = true;
+					if (appearance[n].length > 1) {
+						for (var a = 0; a < appearance[n].length; a++) {
+							if ( appearance[n].length == appearance[o].length
+							  && appearance[n][a].y == appearance[o][a].y && appearance[n][a].x == appearance[o][a].x ) { }
+							else {
+								canmatch = false;
+							}
+						}
+						if (canmatch) {
+							matched = true;
+							match[at].push(o);
+						}
+					}
+				}
+				if (matched) {
+					at++;
+				}
+			}
+			for (var e = 0; e < match.length; e++) {
+				if (match[e].length > 1 && match[e].length == appearance[match[e][0]].length) {
+					console.log(match[e]);
+					for (var y = i; y < i+3; y++) {
+						for (var x = j; x < j+3; x++) {
+							var isPair = true;
+							for (var u = 0; u < match[e].length; u++) {
+								if (!candidacy[y][x].includes(match[e][u])) {
+									isPair = false;
+								}
+							}
+							if (isPair) {
+								console.log(`pair found at r${y+1}c${x+1}`);
+								for (var n = 1; n <= options.length; n++) {
+									if (!match[e].includes(n)) {
+										candidacy[y][x].expel(n);
+									}
+								}
+							} else {
+								console.log(`pair not found at r${y+1}c${x+1}`);
+								for (var u = 0; u < match[e].length; u++) {
+									candidacy[y][x].expel(match[e][u]);
+								}
+								console.log(candidacy[i][j]);
+							}
+						}
 					}
 				}
 			}
