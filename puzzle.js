@@ -54,7 +54,7 @@ function initGrid () {
 	source[7] = [0, 6, 0, 4, 0, 5, 3, 0, 0];
 	source[8] = [0, 1, 0, 0, 3, 0, 6, 2, 0];*/
 	// Expert
-	source[0] = [1, 0, 0, 0, 2, 0, 0, 0, 3];
+	/*source[0] = [1, 0, 0, 0, 2, 0, 0, 0, 3];
 	source[1] = [0, 2, 0, 4, 0, 0, 0, 5, 0];
 	source[2] = [0, 0, 5, 0, 0, 0, 6, 0, 0];
 	source[3] = [0, 0, 0, 0, 0, 0, 0, 7, 0];
@@ -62,9 +62,9 @@ function initGrid () {
 	source[5] = [0, 8, 0, 0, 0, 0, 0, 0, 0];
 	source[6] = [0, 0, 8, 0, 0, 0, 2, 0, 0];
 	source[7] = [0, 7, 0, 0, 0, 1, 0, 4, 0];
-	source[8] = [6, 0, 0, 0, 3, 0, 0, 0, 9];
+	source[8] = [6, 0, 0, 0, 3, 0, 0, 0, 9];*/
 	// Master
-	/*source[0] = [5, 0, 0, 2, 0, 0, 0, 4, 0];
+	source[0] = [5, 0, 0, 2, 0, 0, 0, 4, 0];
 	source[1] = [0, 0, 0, 6, 0, 3, 0, 0, 0];
 	source[2] = [0, 3, 0, 0, 0, 9, 0, 0, 7];
 	source[3] = [0, 0, 3, 0, 0, 7, 0, 0, 0];
@@ -72,7 +72,7 @@ function initGrid () {
 	source[5] = [6, 0, 0, 0, 0, 0, 0, 2, 0];
 	source[6] = [0, 8, 0, 0, 0, 0, 0, 0, 3];
 	source[7] = [0, 0, 0, 4, 0, 0, 6, 0, 0];
-	source[8] = [0, 0, 0, 1, 0, 0, 5, 0, 0];*/
+	source[8] = [0, 0, 0, 1, 0, 0, 5, 0, 0];
 	for (var i = 0; i < 9; i++) {
 		custom[i] = [];
 		for (var j = 0; j < 9; j++) {
@@ -223,6 +223,7 @@ function solve () {
 		candidacy = pruneCandidacy(current, candidacy);
 		//console.log('Will now linear Candidacy');
 		candidacy = linearCandidacy(current, candidacy);
+		candidacy = uniqueLinearity(current, candidacy);
 		candidacy = mutualExclusivity(current, candidacy);
 		//console.log(candidacy);
 		//console.log('Will now unique');
@@ -547,18 +548,18 @@ function mutualExclusivity (matrix, candidacy) {
 						}
 					}
 					if (isPair) {
-						console.log(`pair found at r${i+1}c${j+1}`);
+						//console.log(`pair found at r${i+1}c${j+1}`);
 						for (var n = 1; n <= options.length; n++) {
 							if (!match[e].includes(n)) {
 								candidacy[i][j].expel(n);
 							}
 						}
 					} else {
-						console.log(`pair not found at r${i+1}c${j+1}`);
+						//console.log(`pair not found at r${i+1}c${j+1}`);
 						for (var u = 0; u < match[e].length; u++) {
 							candidacy[i][j].expel(match[e][u]);
 						}
-						console.log(candidacy[i][j]);
+						//console.log(candidacy[i][j]);
 					}
 				}
 			}
@@ -617,18 +618,18 @@ function mutualExclusivity (matrix, candidacy) {
 						}
 					}
 					if (isPair) {
-						console.log(`pair found at r${i+1}c${j+1}`);
+						//console.log(`pair found at r${i+1}c${j+1}`);
 						for (var n = 1; n <= options.length; n++) {
 							if (!match[e].includes(n)) {
 								candidacy[i][j].expel(n);
 							}
 						}
 					} else {
-						console.log(`pair not found at r${i+1}c${j+1}`);
+						//console.log(`pair not found at r${i+1}c${j+1}`);
 						for (var u = 0; u < match[e].length; u++) {
 							candidacy[i][j].expel(match[e][u]);
 						}
-						console.log(candidacy[i][j]);
+						//console.log(candidacy[i][j]);
 					}
 				}
 			}
@@ -691,18 +692,18 @@ function mutualExclusivity (matrix, candidacy) {
 								}
 							}
 							if (isPair) {
-								console.log(`pair found at r${y+1}c${x+1}`);
+								//console.log(`pair found at r${y+1}c${x+1}`);
 								for (var n = 1; n <= options.length; n++) {
 									if (!match[e].includes(n)) {
 										candidacy[y][x].expel(n);
 									}
 								}
 							} else {
-								console.log(`pair not found at r${y+1}c${x+1}`);
+								//console.log(`pair not found at r${y+1}c${x+1}`);
 								for (var u = 0; u < match[e].length; u++) {
 									candidacy[y][x].expel(match[e][u]);
 								}
-								console.log(candidacy[i][j]);
+								//console.log(candidacy[i][j]);
 							}
 						}
 					}
@@ -712,6 +713,75 @@ function mutualExclusivity (matrix, candidacy) {
 	}
 	return candidacy;
 }
+function uniqueLinearity (matrix, candidacy) {
+	//Checks on a row or column, if the only candidates of that case are from the same box
+	var options = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+	for (var n = 1; n <= options.length; n++) {
+		for (var i = 0; i < 9; i++) {
+			var markx = [];
+			var marky = [];
+			var count = 0;
+			for (var j = 0; j < 9; j++) {
+				if (candidacy[i][j].includes(n)) {
+					marky[count] = i;
+					markx[count] = j;
+					count++;
+				}
+			}
+			if (markx.length > 0 && markx.samebox()) {
+				console.log(`Found a unique linearity for '${n}' on row ${i+1} on positions ${markx[0]+1},  ${markx[1]+1}`);
+				var boxro = i.box();
+				var boxco = markx[0].box();
+				for (var y = boxro; y < boxro+3; y++) {
+					for (var x = boxco; x < boxco+3; x++) {
+						var canexpel = true;
+						for (var a = 0; a < count; a++) {
+							if ( markx[a] == x && marky[a] == y) {
+								canexpel = false;
+							}
+						}
+						if (canexpel) {
+							candidacy[y][x].expel(n);
+						}
+					}
+				}
+			}
+		}
+		for (var j = 0; j < 9; j++) {
+			var markx = [];
+			var marky = [];
+			var count = 0;
+			for (var i = 0; i < 9; i++) {
+				if (candidacy[i][j].includes(n)) {
+					marky[count] = i;
+					markx[count] = j;
+					count++;
+				}
+			}
+			if (marky.length > 0 && marky.samebox()) {
+				console.log(`Found a unique linearity for '${n}' on column ${j+1} on positions ${marky[0]+1},  ${marky[1]+1}`);
+				var boxro = marky[0].box();
+				var boxco = j.box();
+				for (var y = boxro; y < boxro+3; y++) {
+					for (var x = boxco; x < boxco+3; x++) {
+						var canexpel = true;
+						for (var a = 0; a < count; a++) {
+							if ( markx[a] == x && marky[a] == y) {
+								canexpel = false;
+							}
+						}
+						if (canexpel) {
+							candidacy[y][x].expel(n);
+						}
+					}
+				}
+			}
+		}
+	}
+	return candidacy;
+}
+
 function mayLay (matrix, row, col, value) {
 	//Checks if this row doesn't already have this value
 	for (var j = 0; j < 9; j++) {
@@ -749,6 +819,20 @@ Array.prototype.homogeneous = function () {
 		}
 	}
 	return true;
+}
+Array.prototype.samebox = function () {
+	if (this.length <= 1) {
+		return false
+	}
+	for (var a = 0; a < this.length; a++) {
+		if (this[a].box() != this[0].box()) {
+			return false
+		}
+	}
+	return true;
+}
+Number.prototype.box = function () {
+	return  Math.floor(this/3)*3;
 }
 // Warn if overriding existing method
 if(Array.prototype.equals)
