@@ -64,7 +64,17 @@ function initGrid () {
 	source[7] = [0, 7, 0, 0, 0, 1, 0, 4, 0];
 	source[8] = [6, 0, 0, 0, 3, 0, 0, 0, 9];*/
 	// Master
-	source[0] = [5, 0, 0, 2, 0, 0, 0, 4, 0];
+	source[0] = [0, 0, 7, 0, 8, 0, 0, 0, 0];
+	source[1] = [4, 0, 0, 0, 0, 0, 0, 2, 0];
+	source[2] = [0, 0, 6, 0, 0, 9, 0, 1, 0];
+	source[3] = [0, 0, 0, 0, 0, 6, 0, 0, 9];
+	source[4] = [5, 7, 0, 0, 0, 0, 0, 0, 8];
+	source[5] = [0, 9, 0, 0, 5, 3, 0, 0, 0];
+	source[6] = [0, 0, 0, 5, 0, 0, 2, 0, 0];
+	source[7] = [2, 0, 0, 9, 0, 0, 0, 7, 0];
+	source[8] = [0, 0, 9, 2, 0, 7, 6, 8, 0];
+	// Master
+	/*source[0] = [5, 0, 0, 2, 0, 0, 0, 4, 0];
 	source[1] = [0, 0, 0, 6, 0, 3, 0, 0, 0];
 	source[2] = [0, 3, 0, 0, 0, 9, 0, 0, 7];
 	source[3] = [0, 0, 3, 0, 0, 7, 0, 0, 0];
@@ -72,7 +82,7 @@ function initGrid () {
 	source[5] = [6, 0, 0, 0, 0, 0, 0, 2, 0];
 	source[6] = [0, 8, 0, 0, 0, 0, 0, 0, 3];
 	source[7] = [0, 0, 0, 4, 0, 0, 6, 0, 0];
-	source[8] = [0, 0, 0, 1, 0, 0, 5, 0, 0];
+	source[8] = [0, 0, 0, 1, 0, 0, 5, 0, 0];*/
 	for (var i = 0; i < 9; i++) {
 		custom[i] = [];
 		for (var j = 0; j < 9; j++) {
@@ -225,6 +235,7 @@ function solve () {
 		candidacy = linearCandidacy(current, candidacy);
 		candidacy = uniqueLinearity(current, candidacy);
 		candidacy = mutualExclusivity(current, candidacy);
+		candidacy = fishDependency(current, candidacy);
 		//console.log(candidacy);
 		//console.log('Will now unique');
 		current = unique(current, candidacy);
@@ -342,7 +353,7 @@ function unique (matrix, candidacy) {
 function soleCandidate (matrix, candidacy) {
 	var options = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
-	for (var n = 0; n < options.length; n++) {
+	for (var n = 1; n <= options.length; n++) {
 		//Checks row by row if a candidacy is the only possible one in its row
 		for (var i = 0; i < 9; i++) {
 			var count = 0;
@@ -778,6 +789,33 @@ function uniqueLinearity (matrix, candidacy) {
 				}
 			}
 		}
+	}
+	return candidacy;
+}
+function fishDependency (matrix, candidacy) {
+	//Initially will only do an X-Wing function, but will expand generically to Swordfish and Jellyfish.
+	var options = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+	for (var n = 1; n <= options.length; n++) {
+		var dependency = [];
+		var state = 0;
+		for (var i = 0; i < 9; i++) {
+			var count = 0;
+			dependency[state] = [];
+			for (var j = 0; j < 9; j++) {
+				if (candidacy[i][j].includes(n)) {
+					dependency[state][count] = {};
+					dependency[state][count].y = i;
+					dependency[state][count].x = j;
+					count++;
+				}
+			}
+			for (var i = 0; i < 9; i++) {}
+			if (dependency[state].length > 1) {
+				state++;
+			}
+		}
+		console.log(dependency);
 	}
 	return candidacy;
 }
